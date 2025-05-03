@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button, Box, Typography, Alert } from '@mui/material';
 import { pingServer } from '../services/ping.service';
@@ -12,6 +11,7 @@ const PingTest = () => {
     setLoading(true);
     setError('');
     setResponse('');
+    console.log('Iniciando teste de ping...');
 
     try {
       const result = await pingServer();
@@ -19,6 +19,7 @@ const PingTest = () => {
     } catch (err) {
       setError('Erro ao conectar com o servidor');
     } finally {
+      console.log('Teste de ping finalizado.');
       setLoading(false);
     }
   };
