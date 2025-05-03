@@ -47,8 +47,8 @@ const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Venda de Pulseiras', icon: <PeopleIcon />, path: '/unidades' },
   { text: 'Cadastro de Pulseiras', icon: <InventoryIcon />, path: '/produtos' },
+  { text: 'Teste de Conexão', icon: <NetworkCheckIcon />, path: '/teste' }, // Novo item
 ];
-
 export default function Layout() {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, Typography } from '@mui/material';
 import Layout from './components/Layout';
 import Unidades from './pages/Unidades';
 import Produtos from './pages/Produtos';
@@ -15,18 +15,39 @@ const theme = createTheme({
 });
 
 function App() {
+  // Logs de ambiente, controlados via modo de build
+  if (import.meta.env.MODE !== 'production') {
+    console.log('Ambiente:', import.meta.env.VITE_APP_ENV);
+    console.log('API URL:', import.meta.env.VITE_API_URL);
+    if (import.meta.env.VITE_ENABLE_LOGS === 'true') {
+      console.log('Logs ativados');
+    }
+  }
+
+  const appTitle = import.meta.env.VITE_APP_TITLE || 'Sistema';
+  const appVersion = import.meta.env.VITE_APP_VERSION || '0.0.1';
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="/unidades" element={<Unidades />} />
-            <Route path="/produtos" element={<Produtos />} />
-            <Route path="/teste" element={<PingTest />} />
-          </Route>
-        </Routes>
+        <Box minHeight="100vh" display="flex" flexDirection="column">
+          <Box flex="1">
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="/unidades" element={<Unidades />} />
+                <Route path="/produtos" element={<Produtos />} />
+                <Route path="/teste" element={<PingTest />} />
+              </Route>
+            </Routes>
+          </Box>
+          <Box component="footer" p={2} textAlign="center" bgcolor="#f5f5f5">
+            <Typography variant="body2" color="textSecondary">
+              {appTitle} - versão {appVersion}
+            </Typography>
+          </Box>
+        </Box>
       </BrowserRouter>
     </ThemeProvider>
   );
