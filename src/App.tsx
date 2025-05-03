@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Unidades from './pages/Unidades';
 import Produtos from './pages/Produtos';
 import Dashboard from './pages/Dashboard';
+import PingTest from './components/PingTest';
 
 const theme = createTheme({
   palette: {
@@ -26,6 +27,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      <PingTest />
     </ThemeProvider>
   );
 }
