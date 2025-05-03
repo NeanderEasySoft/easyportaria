@@ -1,7 +1,11 @@
 import axios from 'axios';
-import { API_CONFIG } from '../config/api.config';
 
-const api = axios.create(API_CONFIG);
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
 
 // Interceptor para logs
 api.interceptors.request.use(request => {
@@ -14,17 +18,20 @@ api.interceptors.request.use(request => {
   return request;
 });
 
+// Interceptor para tratamento de erros
 api.interceptors.response.use(
-  response => {
-    console.log('Resposta recebida:', response.data);
-    return response;
-  },
-  error => {
-    console.error('Erro na requisição:', {
-      message: error.message,
-      status: error.response?.status,
-      data: error.response?.data
-    });
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      // O servidor respondeu com um status de erro
+      console.error('Erro na resposta:', error.response.status);
+    } else if (error.request) {
+      // A requisição foi feita mas não houve resposta
+      console.error('Erro na requisição:', error.request);
+    } else {
+      // Algo aconteceu na configuração da requisição
+      console.error('Erro:', error.message);
+    }
     return Promise.reject(error);
   }
 );

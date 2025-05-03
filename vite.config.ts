@@ -5,6 +5,17 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base: '/', // Usar caminho absoluto para o Amplify
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:9031', // URL fixa para desenvolvimento
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
+  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
