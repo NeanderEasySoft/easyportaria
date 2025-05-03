@@ -20,6 +20,7 @@ import {
   Dashboard as DashboardIcon,
 } from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import PingTest from './PingTest';
 
 const drawerWidth = 240;
 
@@ -129,6 +130,9 @@ export default function Layout() {
 
       <Main open={open}>
         <Toolbar />
+        <Box sx={{ mb: 2 }}>
+          <PingTest />
+        </Box>
         <Outlet />
       </Main>
     </Box>

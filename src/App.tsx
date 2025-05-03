@@ -24,10 +24,10 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="/unidades" element={<Unidades />} />
             <Route path="/produtos" element={<Produtos />} />
+            <Route path="/teste" element={<PingTest />} />
           </Route>
         </Routes>
       </BrowserRouter>
-      <PingTest />
     </ThemeProvider>
   );
 }
