@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './', // Garante que os assets sejam carregados corretamente
+  base: '/', // Usar caminho absoluto para o Amplify
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -15,5 +15,13 @@ export default defineConfig({
         },
       },
     },
+    sourcemap: true,
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false,
+        drop_debugger: true
+      }
+    }
   },
 })
