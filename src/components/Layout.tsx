@@ -18,6 +18,7 @@ import {
   People as PeopleIcon,
   Inventory as InventoryIcon,
   Dashboard as DashboardIcon,
+  NetworkCheck as NetworkCheckIcon,
 } from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import PingTest from './PingTest';
@@ -47,7 +48,7 @@ const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
   { text: 'Venda de Pulseiras', icon: <PeopleIcon />, path: '/unidades' },
   { text: 'Cadastro de Pulseiras', icon: <InventoryIcon />, path: '/produtos' },
-  { text: 'Teste de Conexão', icon: <NetworkCheckIcon />, path: '/teste' }, // Novo item
+  { text: 'Teste de Conexão', icon: <NetworkCheckIcon />, path: '/teste' },
 ];
 export default function Layout() {
   const [open, setOpen] = useState(true);
