@@ -480,7 +480,7 @@ export default function Unidades() {
   };
 
   return (
-    <Box sx={{ p: 0, m: 0, width: '100%' }}>
+    <Box sx={{ p: 0, m: 0, width: '100%'}}>
       <Typography 
         variant="h4" 
         component="h1" 
@@ -496,6 +496,7 @@ export default function Unidades() {
                     flexDirection: { xs: 'column', md: 'row' },
                     gap: 2,
                     alignItems: 'stretch',
+                    
                   }}>
           <Box sx={{ flex: 1 }}>
             <TextField
@@ -600,7 +601,7 @@ export default function Unidades() {
       <Paper>
       <Fade in={!loading} timeout={loading ? 0 : 1000}>
       <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
-      <Table sx={{ minWidth: 1100 }}>
+      <Table>
               <TableHead>
                 <TableRow>
                 <StyledTableCell sx={{ width: 100, minWidth: 100 }}>Ações</StyledTableCell>

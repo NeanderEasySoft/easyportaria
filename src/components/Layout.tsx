@@ -23,7 +23,7 @@ import {
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
-const collapsedDrawerWidth = 60;
+const collapsedDrawerWidth = 20;
 
 const Main = styled('main', {
   shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isMobile',
@@ -32,7 +32,7 @@ const Main = styled('main', {
   isMobile?: boolean;
 }>(({ theme, open, isMobile }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  padding: theme.spacing(3, 0, 0, 0),
   transition: theme.transitions.create(['margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.standard,
@@ -170,7 +170,7 @@ export default function Layout() {
         </Box>
       </Drawer>
 
-      <Main open={open} sx={{ width: '100%' }}>
+      <Main open={open} sx={{ p: 3, m: 0, width: '100%' }}>
 
         <Toolbar />
         <Outlet />
