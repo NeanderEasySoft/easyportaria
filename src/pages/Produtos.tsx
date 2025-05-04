@@ -157,10 +157,6 @@ export default function Produtos() {
       novosErros.descricao = 'A descrição é obrigatória';
     }
     
-    if (produtoEmEdicao.valor <= 0) {
-      novosErros.valor = 'O valor deve ser maior que zero';
-    }
-
     if (!produtoEmEdicao.status) {
       novosErros.status = 'O status é obrigatório';
     }

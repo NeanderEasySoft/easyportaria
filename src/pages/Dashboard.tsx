@@ -16,11 +16,6 @@ import {
 } from '@mui/icons-material';
 import { styled } from '@mui/material/styles';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
@@ -63,9 +58,9 @@ interface DashboardData {
     status: string;
     quantidade: number;
   }[];
-  faturamentoPorMes: {
-    mes: string;
-    valor: number;
+  quantidadePorProduto: {
+    produto: string;
+    quantidade: number;
   }[];
 }
 
@@ -207,34 +202,40 @@ export default function Dashboard() {
         </Box>
       </Box>
 
-      {/* Gráficos */}
+      {/* Gráficos e Cards */}
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-        <Box sx={{ flex: '1 1 calc(66.666% - 12px)', minWidth: 400 }}>
-          <Paper sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" gutterBottom>
-              Faturamento por Mês
-            </Typography>
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.faturamentoPorMes}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="mes" />
-                <YAxis />
-                <Tooltip 
-                  formatter={(value: number) => 
-                    new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL'
-                    }).format(value)
-                  }
-                />
-                <Legend />
-                <Bar dataKey="valor" name="Faturamento" fill="#0088FE" />
-              </BarChart>
-            </ResponsiveContainer>
-          </Paper>
+
+        {/* Adicionar grade de Cards para Quantidade por Produto */}
+        <Box sx={{ width: '100%', mb: 3 }}> {/* Container para a seção de cards */}
+          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+            Quantidade Vendida por Produto
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            {data.quantidadePorProduto.map((item) => (
+              <Paper
+                key={item.produto} // Usar nome do produto como chave
+                sx={{
+                  p: 2,
+                  flex: '1 1 calc(20% - 16px)', // Tenta encaixar 5 por linha
+                  minWidth: 150, // Largura mínima
+                  textAlign: 'center',
+                  bgcolor: 'background.paper', // Garante fundo padrão
+                }}
+                elevation={2}
+              >
+                <Typography variant="h5" component="div" sx={{ color: '#00C49F' }}> {/* Valor em destaque */}
+                  {item.quantidade}
+                </Typography>
+                <Typography color="text.secondary" variant="body2" sx={{ mt: 1 }}> {/* Nome do produto */}
+                  {item.produto}
+                </Typography>
+              </Paper>
+            ))}
+          </Box>
         </Box>
 
-        <Box sx={{ flex: '1 1 calc(33.333% - 12px)', minWidth: 300 }}>
+        {/* Gráfico de Pizza de Status dos Pedidos (mantido) */}
+        <Box sx={{ flex: '1 1 100%', minWidth: 300 }}> {/* Fazer ocupar a linha inteira agora */}
           <Paper sx={{ p: 3, height: 400 }}>
             <Typography variant="h6" gutterBottom>
               Status dos Pedidos
