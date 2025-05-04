@@ -25,23 +25,21 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 const drawerWidth = 240;
 const collapsedDrawerWidth = 60;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+const Main = styled('main', {
+  shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isMobile',
+})<{
   open?: boolean;
-}>(({ theme, open }) => ({
+  isMobile?: boolean;
+}>(({ theme, open, isMobile }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create(['margin'], {
     easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
+    duration: theme.transitions.duration.standard,
   }),
-  marginLeft: 0,
-  ...(open && {
-    marginLeft: drawerWidth,
-    transition: theme.transitions.create('margin', {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
+  marginLeft: isMobile ? 0 : open ? `${drawerWidth}px` : `${collapsedDrawerWidth}px`,
+  maxWidth: '100%',
+  overflowX: 'hidden',
 }));
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
@@ -172,7 +170,7 @@ export default function Layout() {
         </Box>
       </Drawer>
 
-      <Main open={open} isMobile={isMobile} sx={{ width: '100%' }}>
+      <Main open={open} sx={{ width: '100%' }}>
 
         <Toolbar />
         <Outlet />

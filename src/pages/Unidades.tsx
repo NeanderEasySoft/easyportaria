@@ -480,7 +480,7 @@ export default function Unidades() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: 0, m: 0, width: '100%' }}>
       <Typography 
         variant="h4" 
         component="h1" 
@@ -491,7 +491,12 @@ export default function Unidades() {
       </Typography>
 
       <Paper sx={{ p: 2, mb: 3 }}>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2 }}>
+        <Box  sx={{
+                    display: 'flex',
+                    flexDirection: { xs: 'column', md: 'row' },
+                    gap: 2,
+                    alignItems: 'stretch',
+                  }}>
           <Box sx={{ flex: 1 }}>
             <TextField
               fullWidth
@@ -593,99 +598,90 @@ export default function Unidades() {
       )}
 
       <Paper>
-        <Fade in={!loading} timeout={loading ? 0 : 1000}>
-          <TableContainer>
-            <Table>
+      <Fade in={!loading} timeout={loading ? 0 : 1000}>
+      <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
+      <Table sx={{ minWidth: 1100 }}>
               <TableHead>
                 <TableRow>
-                  <StyledTableCell sx={{ width: 100, minWidth: 100 }}>Ações</StyledTableCell>
-                  <StyledTableCell>ID</StyledTableCell>
-                  <StyledTableCell>Unidade</StyledTableCell>
-                  <StyledTableCell>Tipo</StyledTableCell>
-                  <StyledTableCell>Pessoa</StyledTableCell>
-                  <StyledTableCell>Nº Pedido</StyledTableCell>
-                  <StyledTableCell>Status Pedido</StyledTableCell>
-                  <StyledTableCell>Status Retirada</StyledTableCell>
-                  <StyledTableCell align="right">Total</StyledTableCell>
-                  <StyledTableCell>Email</StyledTableCell>
-                  <StyledTableCell>Telefones</StyledTableCell>
-                  <StyledTableCell>ID Lello</StyledTableCell>
-                </TableRow>
+                <StyledTableCell sx={{ width: 100, minWidth: 100 }}>Ações</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>ID</StyledTableCell>
+                <StyledTableCell>Unidade</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Tipo</StyledTableCell>
+                <StyledTableCell>Pessoa</StyledTableCell>
+                <StyledTableCell>Nº Pedido</StyledTableCell>
+                <StyledTableCell>Status Pedido</StyledTableCell>
+                <StyledTableCell>Status Retirada</StyledTableCell>
+                <StyledTableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Total</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Email</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Telefones</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>ID Lello</StyledTableCell>
+         
+                    </TableRow>
               </TableHead>
+
               <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={12} align="center" sx={{ py: 3 }}>
-                      <CircularProgress size={40} />
+              {unidadesPaginadas.map((unidade) => (
+                <StyledTableRow key={unidade.id_unidade}>
+                  {/* Ações – sempre visível */}
+                  <TableCell sx={{ width: 100, minWidth: 100 }}>
+                    <Box sx={{ display: 'flex', gap: 1, justifyContent: 'start', flexWrap: { xs: 'wrap', sm: 'nowrap' } }}>
+                      <IconButton color="primary" onClick={() => handleAbrirCarrinho(unidade)} size="small">
+                        <ShoppingCartIcon />
+                      </IconButton>
+                      {(unidade.status_carrinho === 'Pago' || unidade.status_carrinho === 'Aberto') && unidade.celular && (
+                        <IconButton
+                          color={unidade.status_carrinho === 'Pago' ? 'success' : 'primary'}
+                          onClick={async () => await enviarPedidoWhatsApp(unidade, unidade.status_carrinho || 'Aberto')}
+                          size="small"
+                          title={`Enviar ${unidade.status_carrinho === 'Pago' ? 'instruções de retirada' : 'dados para pagamento'} por WhatsApp`}
+                        >
+                          <WhatsAppIcon />
+                        </IconButton>
+                      )}
+                    </Box>
+                  </TableCell>
+
+                  {/* Campos com visibilidade condicional */}
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{unidade.id_unidade}</TableCell>
+                  <TableCell>{unidade.nomeunidade}</TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{unidade.tipo}</TableCell>
+                  <TableCell
+                      sx={{
+                        whiteSpace: { xs: 'normal', md: 'nowrap' },
+                        wordBreak: 'break-word',
+                        maxWidth: { xs: 120, md: 'initial' },
+                        overflowWrap: 'break-word',
+                      }}
+                    >
+                      {unidade.pessoa}
                     </TableCell>
-                  </TableRow>
-                ) : unidadesPaginadas.length > 0 ? (
-                  unidadesPaginadas.map((unidade) => (
-                    <StyledTableRow key={unidade.id_unidade}>
-                      <TableCell sx={{ width: 100, minWidth: 100 }}>
-                        <Box sx={{ 
-                          display: 'flex', 
-                          gap: 1,
-                          justifyContent: 'start'
-                        }}>
-                          <IconButton
-                            color="primary"
-                            onClick={() => handleAbrirCarrinho(unidade)}
-                            size="small"
-                          >
-                            <ShoppingCartIcon />
-                          </IconButton>
-                          {(unidade.status_carrinho === 'Pago' || unidade.status_carrinho === 'Aberto') && unidade.celular && (
-                            <IconButton
-                              color={unidade.status_carrinho === 'Pago' ? 'success' : 'primary'}
-                              onClick={async () => await enviarPedidoWhatsApp(unidade, unidade.status_carrinho || 'Aberto')}
-                              size="small"
-                              title={`Enviar ${unidade.status_carrinho === 'Pago' ? 'instruções de retirada' : 'dados para pagamento'} por WhatsApp`}
-                            >
-                              <WhatsAppIcon />
-                            </IconButton>
-                          )}
-                        </Box>
-                      </TableCell>
-                      <TableCell>{unidade.id_unidade}</TableCell>
-                      <TableCell>{unidade.nomeunidade}</TableCell>
-                      <TableCell>{unidade.tipo}</TableCell>
-                      <TableCell>{unidade.pessoa}</TableCell>
-                      <TableCell>{unidade.id_carrinho || '-'}</TableCell>
-                      <TableCell>
-                        {unidade.status_carrinho ? (
-                          <StyledStatus status={unidade.status_carrinho}>
-                            {unidade.status_carrinho}
-                          </StyledStatus>
-                        ) : '-'}
-                      </TableCell>
-                      <TableCell>
-                        {unidade.status_retirada ? (
-                          <StyledStatusRetirada status={unidade.status_retirada}>
-                            {unidade.status_retirada}
-                          </StyledStatusRetirada>
-                        ) : '-'}
-                      </TableCell>
-                      <TableCell align="right">
-                        {unidade.total_carrinho ? formatarMoeda(unidade.total_carrinho) : '-'}
-                      </TableCell>
-                      <TableCell>{unidade.email}</TableCell>
-                      <TableCell>
-                        {[unidade.celular, unidade.fone, unidade.comercial]
-                          .filter(tel => tel)
-                          .join(' / ')}
-                      </TableCell>
-                      <TableCell>{unidade.idunidade}</TableCell>
-                    </StyledTableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={12} align="center">
-                      Nenhuma unidade encontrada
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
+                  <TableCell>{unidade.id_carrinho || '-'}</TableCell>
+                  <TableCell>
+                    {unidade.status_carrinho ? (
+                      <StyledStatus status={unidade.status_carrinho}>
+                        {unidade.status_carrinho}
+                      </StyledStatus>
+                    ) : '-'}
+                  </TableCell>
+                  <TableCell>
+                    {unidade.status_retirada ? (
+                      <StyledStatusRetirada status={unidade.status_retirada}>
+                        {unidade.status_retirada}
+                      </StyledStatusRetirada>
+                    ) : '-'}
+                  </TableCell>
+                  <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                    {unidade.total_carrinho ? formatarMoeda(unidade.total_carrinho) : '-'}
+                  </TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{unidade.email}</TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
+                    {[unidade.celular, unidade.fone, unidade.comercial].filter(tel => tel).join(' / ')}
+                  </TableCell>
+                  <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{unidade.idunidade}</TableCell>
+                </StyledTableRow>
+              ))}
+            </TableBody>
+             
             </Table>
           </TableContainer>
         </Fade>
@@ -718,7 +714,7 @@ export default function Unidades() {
             </Typography>
           )}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ px: { xs: 1, sm: 3 } }}>
           {erroCarrinho && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {erroCarrinho}
@@ -786,8 +782,8 @@ export default function Unidades() {
               Produtos Disponíveis
             </Typography>
             
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
-              <Table size="small">
+            <TableContainer component={Paper} sx={{ mt: 2, overflowX: 'auto' }}>
+            <Table size="small" sx={{ minWidth: 600 }}>
                 <TableHead>
                   <TableRow>
                     <StyledTableCell>ID</StyledTableCell>
