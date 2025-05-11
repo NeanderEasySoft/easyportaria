@@ -17,9 +17,6 @@ import {
 import {
   Menu as MenuIcon,
   People as PeopleIcon,
-  Inventory as InventoryIcon,
-  Dashboard as DashboardIcon,
-  NetworkPing as NetworkPingIcon,
 } from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 

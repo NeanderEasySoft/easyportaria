@@ -15,8 +15,6 @@ import {
   Alert,
   Typography,
   SelectChangeEvent,
-  IconButton,
-  Box,
 } from '@mui/material';
 import {
   Room as RoomIcon
@@ -78,7 +76,6 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
   const [erroFormularioEdicao, setErroFormularioEdicao] = useState<string>('');
   const [salvandoAlteracao, setSalvandoAlteracao] = useState(false);
   const [buscandoGeo, setBuscandoGeo] = useState(false);
-  const [mapImageUrl, setMapImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (proprietario) {
@@ -100,18 +97,9 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
       });
       setErroFormularioEdicao('');
     } else {
-      const { altitude, ...resto } = dadosFormularioEdicao;
-      setDadosFormularioEdicao(resto);
+      setDadosFormularioEdicao({} as Partial<Unidade>); 
     }
   }, [proprietario, open]);
-
-  useEffect(() => {
-    if (dadosFormularioEdicao.latitude && dadosFormularioEdicao.longitude) {
-      setMapImageUrl(null);
-    } else {
-      setMapImageUrl(null);
-    }
-  }, [dadosFormularioEdicao.latitude, dadosFormularioEdicao.longitude]);
 
   const handleChangeFormularioEdicao = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
     const { name, value } = event.target;
@@ -159,7 +147,6 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
       setErroFormularioEdicao("ID da unidade para alteração não encontrado. Contate o suporte.");
       return;
     }
-
     if (!dadosFormularioEdicao.nomeunidade?.trim()) {
       setErroFormularioEdicao("O nome da unidade/local não pode ser vazio.");
       return;
@@ -172,17 +159,14 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
       setErroFormularioEdicao("O campo Tipo é obrigatório.");
       return;
     }
-    
     const { altitude, ...dadosRelevantes } = dadosFormularioEdicao;
     const dadosParaSalvar: Partial<Unidade> = dadosRelevantes;
-
     setSalvandoAlteracao(true);
     setErroFormularioEdicao('');
     try {
       await onSave(dadosParaSalvar);
     } catch (err: any) {
-      console.error("Erro ao salvar alteração no modal:", err);
-      const errorMsg = err.response?.data?.error || err.message || 'Erro desconhecido ao salvar alterações.';
+      const errorMsg = err.response?.data?.error || err.response?.data?.mensagem || err.message || 'Erro desconhecido ao salvar alterações.';
       setErroFormularioEdicao(errorMsg);
     } finally {
       setSalvandoAlteracao(false);
@@ -218,8 +202,7 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
           </Alert>
         )}
         
-        <Grid component="form" noValidate autoComplete="off" container spacing={2} sx={{ mt: 1 }}>
-        
+        <Grid component="form" noValidate autoComplete="off" container spacing={2} sx={{ mt: 0.5 }}>
           <Grid item xs={12}>
             <TextField
               required
@@ -233,7 +216,9 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
               disabled={salvandoAlteracao}
               error={!dadosFormularioEdicao.nomeunidade?.trim() && !!erroFormularioEdicao && erroFormularioEdicao.includes("unidade")}
             />
+          </Grid>
 
+          <Grid item xs={12}>
             <TextField
               required
               fullWidth
@@ -246,7 +231,9 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
               disabled={salvandoAlteracao}
               error={!dadosFormularioEdicao.pessoa?.trim() && !!erroFormularioEdicao && erroFormularioEdicao.includes("pessoa")}
             />
+          </Grid>
 
+          <Grid item xs={12}>
             <FormControl fullWidth margin="dense" disabled={salvandoAlteracao}>
               <InputLabel id="tipo-select-label">Tipo</InputLabel>
               <Select
@@ -261,7 +248,9 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
                 <MenuItem value={"Inquilino"}>Inquilino</MenuItem>
               </Select>
             </FormControl>
+          </Grid>
 
+          <Grid item xs={12}>
             <TextField
               fullWidth
               margin="dense"
@@ -272,7 +261,9 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
               onChange={handleChangeFormularioEdicao}
               disabled={salvandoAlteracao}
             />
+          </Grid>
 
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               margin="dense"
@@ -283,7 +274,9 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
               onChange={handleChangeFormularioEdicao}
               disabled={salvandoAlteracao}
             />
+          </Grid>
 
+          <Grid item xs={12} sm={6}> 
             <TextField
               fullWidth
               margin="dense"
@@ -295,9 +288,8 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
               onChange={handleChangeFormularioEdicao}
               disabled={salvandoAlteracao}
             />
-
           </Grid>
-
+          
           <Grid item xs={12} sm={6}> 
             <TextField
               fullWidth
@@ -363,7 +355,7 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
           </Grid>
 
           <Grid item xs={12} container spacing={1} alignItems="center" sx={{ mt: 1 }}>
-            <Grid item>
+            <Grid item xs="auto">
               <Button 
                 variant="outlined"
                 color="primary" 
@@ -375,7 +367,7 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
               </Button>
             </Grid>
             {(dadosFormularioEdicao.latitude && dadosFormularioEdicao.longitude) && (
-              <Grid item xs>
+              <Grid item xs={true}>
                 <Typography variant="body2" sx={{ ml: 2, mb: 1 }}>
                   Lat: {dadosFormularioEdicao.latitude?.toFixed(6) || '-'}, Lon: {dadosFormularioEdicao.longitude?.toFixed(6) || '-'}
                 </Typography>
@@ -383,8 +375,8 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
                   variant="text"
                   size="small"
                   href={`https://www.google.com/maps/search/?api=1&query=${dadosFormularioEdicao.latitude},${dadosFormularioEdicao.longitude}`}
-                  target="_blank" // Abrir em nova aba
-                  rel="noopener noreferrer" // Por segurança
+                  target="_blank"
+                  rel="noopener noreferrer"
                   startIcon={<RoomIcon />}
                   sx={{ ml: 2 }}
                 >
@@ -393,13 +385,10 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
               </Grid>
             )}
           </Grid>
-          
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} color="primary" disabled={salvandoAlteracao || buscandoGeo}>
-          Cancelar
-        </Button>
+        <Button onClick={handleClose} color="primary" disabled={salvandoAlteracao || buscandoGeo}>Cancelar</Button>
         <Button 
           onClick={handleSalvar} 
           variant="contained" 

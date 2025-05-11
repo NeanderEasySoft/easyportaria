@@ -14,20 +14,9 @@ import {
   CircularProgress,
   Alert,
   TablePagination,
-  Fade,
   styled,
   IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Button,
-  Grid,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  SelectChangeEvent,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -38,7 +27,6 @@ import {
   Room as RoomIcon,
 } from '@mui/icons-material';
 import { UnidadesService, Unidade, FiltroUnidade } from '../services/proprietarios.service';
-import { IMaskInput } from 'react-imask';
 import React from 'react';
 import ModalAlteracaoProprietario from '../components/ModalAlteracaoProprietario';
 
@@ -60,107 +48,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
     backgroundColor: theme.palette.action.selected,
   },
 }));
-
-const StyledStatus = styled('span')<{ status: string }>(({ status }) => {
-  let backgroundColor = '#e0e0e0';
-  let color = '#000000';
-
-  switch (status) {
-    case 'Ativo':
-      backgroundColor = '#4caf50';
-      color = '#ffffff';
-      break;
-    case 'Inativo':
-      backgroundColor = '#f44336';
-      color = '#ffffff';
-      break;
-  }
-
-  return {
-    backgroundColor,
-    color,
-    padding: '3px 10px',
-    borderRadius: '12px',
-    display: 'inline-block',
-    fontSize: '0.875rem',
-    fontWeight: '500',
-  };
-});
-
-const StyledStatusRetirada = styled('span')<{ status: string }>(({ status }) => {
-  let backgroundColor = '#e0e0e0';
-  let color = '#000000';
-
-  switch (status) {
-    case 'Retirado':
-      backgroundColor = '#4caf50';
-      color = '#ffffff';
-      break;
-    case 'Não Retirado':
-      backgroundColor = '#f44336';
-      color = '#ffffff';
-      break;
-  }
-
-  return {
-    backgroundColor,
-    color,
-    padding: '3px 10px',
-    borderRadius: '12px',
-    display: 'inline-block',
-    fontSize: '0.875rem',
-    fontWeight: '500',
-  };
-});
-
-// --- INÍCIO DOS COMPONENTES DE MÁSCARA CUSTOMIZADOS ---
-interface CustomMaskProps {
-  onChange: (event: { target: { name: string; value: string } }) => void;
-  name: string;
-}
-
-// Máscara para Telefone Celular (com 9º dígito opcional)
-// (00) 0000-0000 ou (00) 00000-0000
-const CelularMaskCustom = React.forwardRef<HTMLInputElement, CustomMaskProps>(
-  function CelularMaskCustom(props, ref) {
-    const { onChange, ...other } = props;
-    return (
-      <IMaskInput
-        {...other}
-        mask="(00) 00000-0000" // Máscara mais simples, se o 9o digito for sempre esperado
-        // Ou uma máscara dinâmica mais complexa se precisar acomodar DDDs com 8 ou 9 dígitos:
-        // mask={[
-        //   { mask: '(00) 0000-0000' },
-        //   { mask: '(00) 00000-0000' }
-        // ]}
-        // definitions={{
-        //   '#': /[0-9]/,
-        // }}
-        inputRef={ref}
-        onAccept={(value: any) => onChange({ target: { name: props.name, value } })}
-        overwrite
-      />
-    );
-  },
-);
-
-// Máscara para Telefone Fixo/Comercial (8 dígitos)
-// (00) 0000-0000
-const TelefoneFixoMaskCustom = React.forwardRef<HTMLInputElement, CustomMaskProps>(
-  function TelefoneFixoMaskCustom(props, ref) {
-    const { onChange, ...other } = props;
-    return (
-      <IMaskInput
-        {...other}
-        mask="(00) 0000-0000"
-        inputRef={ref}
-        onAccept={(value: any) => onChange({ target: { name: props.name, value } })}
-        overwrite
-      />
-    );
-  },
-);
-// --- FIM DOS COMPONENTES DE MÁSCARA CUSTOMIZADOS ---
 
 export default function Proprietarios() {
   const [proprietarios, setProprietarios] = useState<Unidade[]>([]);
@@ -188,20 +75,15 @@ export default function Proprietarios() {
       if (nomeUnidade) filtros.nomeunidade = nomeUnidade;
       if (nomePessoa) filtros.pessoa = nomePessoa;
       
-      console.log('Filtros enviados para UnidadesService.listar:', filtros);
       const data = await UnidadesService.listar(filtros);
       
-      console.log('Dados recebidos de UnidadesService.listar:', data);
-
       if (!Array.isArray(data)) {
-        console.error('Erro: UnidadesService.listar não retornou um array!', data);
         setErro('Erro ao processar dados dos proprietários: formato inesperado.');
         setProprietarios([]);
         setLoading(false);
         return;
       }
 
-      // Usando chaves minúsculas para ordenação
       const proprietariosOrdenados = [...data].sort((a, b) => {
         const nomeA = a && typeof a.nomeunidade === 'string' ? a.nomeunidade : '';
         const nomeB = b && typeof b.nomeunidade === 'string' ? b.nomeunidade : '';
@@ -211,8 +93,6 @@ export default function Proprietarios() {
       setProprietarios(proprietariosOrdenados);
       setPage(0);
     } catch (error: any) {
-      console.error('Erro COMPLETO ao buscar proprietários (Proprietarios.tsx):', error);
-      console.error('Erro response data (se existir):', error.response?.data);
       setErro(`Erro ao buscar proprietários: ${error.message}`);
       setProprietarios([]);
     } finally {
@@ -242,19 +122,7 @@ export default function Proprietarios() {
     page * rowsPerPage + rowsPerPage
   );
 
-  console.log('Proprietarios Paginados para renderizar:', proprietariosPaginados);
-  console.log('Estado "proprietarios" completo:', proprietarios);
-  console.log('Página atual:', page, 'Itens por página:', rowsPerPage);
-
-  const formatarMoeda = (valor: number): string => {
-    return valor.toLocaleString('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
-    });
-  };
-
   const formatarMensagemWhatsApp = async (proprietario: Unidade): Promise<string> => {
-    // Usando chaves minúsculas
     let mensagem = `Olá ${proprietario.pessoa}!\\n\\n`;
     mensagem += `Segue informação referente à unidade ${proprietario.nomeunidade}.\\n\\n`;
     mensagem += `*Dados do Cliente:*\\n`;
@@ -296,52 +164,30 @@ export default function Proprietarios() {
 
   const handleFecharModalAlterar = () => {
     setModalAlteraAberto(false);
-    // Não resetamos proprietarioParaAlterar aqui imediatamente,
-    // o modal pode precisar dele enquanto fecha a animação.
-    // Considerar resetar após um pequeno timeout ou quando o modal sinalizar 'onClosed' se disponível
-    // Por ora, o useEffect dentro do modal já lida com a atualização dos dados do formulário.
   };
   
-  // Esta função agora decide se cria ou atualiza
   const handleSalvarModal = async (dadosFormulario: Partial<Unidade>) => {
-    if (proprietarioParaAlterar && proprietarioParaAlterar.id_unidade) {
-      // Modo Edição (PUT)
-      setAtualizandoProprietario(true);
-      setErroAtualizacao('');
-      try {
+    setAtualizandoProprietario(true);
+    setErroAtualizacao('');
+    try {
+      if (proprietarioParaAlterar && proprietarioParaAlterar.id_unidade) {
         await UnidadesService.atualizar(proprietarioParaAlterar.id_unidade, dadosFormulario);
         alert('Proprietário atualizado com sucesso!'); 
-        handleFecharModalAlterar();
-        buscarProprietarios();
-      } catch (err: any) {
-        const errorMsg = err.response?.data?.mensagem || err.message || 'Erro desconhecido ao atualizar.';
-        setErroAtualizacao(errorMsg); // Erro para o modal
-        throw err; // Re-lança para o modal poder tratar internamente se quiser
-      } finally {
-        setAtualizandoProprietario(false);
+      } else {
+        await UnidadesService.criar(dadosFormulario);
+        alert('Proprietário incluído com sucesso!'); 
       }
-    } else {
-      // Modo Criação (POST)
-      setAtualizandoProprietario(true);
-      setErroAtualizacao('');
-      try {
-        // TODO: Implementar UnidadesService.criar (agora será implementado)
-        await UnidadesService.criar(dadosFormulario); // Chamando o serviço real
-        // console.log("Dados para criar nova unidade:", dadosFormulario); // Placeholder removido
-        alert('Proprietário incluído com sucesso!'); // Mensagem de sucesso mantida
-        handleFecharModalAlterar();
-        buscarProprietarios();
-      } catch (err: any) {
-        const errorMsg = err.response?.data?.mensagem || err.message || 'Erro desconhecido ao incluir.';
-        setErroAtualizacao(errorMsg); // Erro para o modal
-        throw err; // Re-lança para o modal poder tratar internamente se quiser
-      } finally {
-        setAtualizandoProprietario(false);
-      }
+      handleFecharModalAlterar();
+      buscarProprietarios();
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.mensagem || err.message || (proprietarioParaAlterar ? 'Erro desconhecido ao atualizar.' : 'Erro desconhecido ao incluir.');
+      setErroAtualizacao(errorMsg);
+      throw err; 
+    } finally {
+      setAtualizandoProprietario(false);
     }
   };
 
-  // Modificar a função handleAlterar que é chamada pelo botão na tabela:
   const handleAlterar = (proprietario: Unidade) => {
     handleAbrirModalAlterar(proprietario);
   };
@@ -362,7 +208,6 @@ export default function Proprietarios() {
     }
   };
   
-
   return (
     <Box sx={{ p: 0, m: 0, width: '100%'}}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -425,22 +270,37 @@ export default function Proprietarios() {
         </Alert>
       )}
 
-      <Paper>
-      <Fade in={!loading && !atualizandoProprietario} timeout={(loading || atualizandoProprietario) ? 0 : 1000}>
-      <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
-      <Table>
-              <TableHead>
-                <TableRow>
-                  <StyledTableCell sx={{ width: 'auto', minWidth: 160 }}>Ações</StyledTableCell>
-                  <StyledTableCell>Unidade</StyledTableCell>
-                  <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Tipo</StyledTableCell>
-                  <StyledTableCell>Pessoa (Proprietário)</StyledTableCell>
-                  <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Telefones</StyledTableCell>
-                  <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' }, minWidth: 300 }}>Endereço</StyledTableCell>
-                  <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Número</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+      {/* Indicador de carregamento global para buscar/excluir */}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+          <CircularProgress />
+        </Box>
+      )}
+
+      {/* Indicador de carregamento para salvar/criar (pode ser sobreposto ou em local diferente se desejado) */}
+      {atualizandoProprietario && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 2, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}>
+          {/* Este CircularProgress é para o estado 'atualizandoProprietario' (operações do modal) */}
+          {/* A lógica do Fade abaixo já considera 'atualizandoProprietario' para esconder a tabela */}
+          {/* Poderíamos ter um indicador mais específico aqui se o 'loading' geral não for suficiente */}
+        </Box>
+      )}
+
+      <Paper sx={{ opacity: loading || atualizandoProprietario ? 0.5 : 1, pointerEvents: loading || atualizandoProprietario ? 'none' : 'auto' }}>
+        <TableContainer sx={{ width: '100%', overflowX: 'auto' }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <StyledTableCell sx={{ width: 'auto', minWidth: 160 }}>Ações</StyledTableCell>
+                <StyledTableCell>Unidade</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Tipo</StyledTableCell>
+                <StyledTableCell>Pessoa (Proprietário)</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Telefones</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' }, minWidth: 300 }}>Endereço</StyledTableCell>
+                <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Número</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
               {proprietariosPaginados.map((proprietario) => (
                 <StyledTableRow key={proprietario.id_unidade}>
                   <TableCell sx={{ width: 'auto', minWidth: 160 }}>
@@ -503,9 +363,8 @@ export default function Proprietarios() {
                 </StyledTableRow>
               ))}
             </TableBody>
-            </Table>
-          </TableContainer>
-        </Fade>
+          </Table>
+        </TableContainer>
         <TablePagination
           rowsPerPageOptions={[5, 10, 25, 50]}
           component="div"
