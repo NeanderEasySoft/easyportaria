@@ -8,6 +8,7 @@ const PingTest = () => {
   const [loading, setLoading] = useState(false);
 
   const handlePing = async () => {
+    console.log('VITE_API_URL lida pelo frontend:', import.meta.env.VITE_API_URL);
     setLoading(true);
     setError('');
     setResponse('');

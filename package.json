@@ -1,5 +1,5 @@
 {
-  "name": "easybluefrontend",
+  "name": "easyportaria",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -17,6 +17,7 @@
     "axios": "^1.9.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-imask": "^7.6.1",
     "react-router-dom": "^7.5.3",
     "recharts": "^2.15.3"
   },

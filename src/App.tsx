@@ -12,9 +12,10 @@ import PingTest from './components/PingTest'
 import LoadingScreen from './components/LoadingScreen'
 
 // Lazy imports (pages)
-const Dashboard = lazy(() => import('./pages/Dashboard'))
-const Unidades = lazy(() => import('./pages/Unidades'))
-const Produtos = lazy(() => import('./pages/Produtos'))
+//const Dashboard = lazy(() => import('./pages/Dashboard')) // Comentado
+//const Unidades = lazy(() => import('./pages/Unidades'))   // Comentado
+//const Produtos = lazy(() => import('./pages/Produtos'))   // Comentado
+const Proprietarios = lazy(() => import('./pages/Proprietarios'))
 
 const theme = createTheme({
   palette: {
@@ -45,10 +46,11 @@ function App() {
             <Suspense fallback={<LoadingScreen />}>
               <Routes>
                 <Route path="/" element={<Layout />}>
-                  <Route index element={<Dashboard />} />
-                  <Route path="/unidades" element={<Unidades />} />
-                  <Route path="/produtos" element={<Produtos />} />
+                  {/* <Route index element={<Dashboard />} /> */}
+                  {/* <Route path="/unidades" element={<Unidades />} /> */}
+                  {/* <Route path="/produtos" element={<Produtos />} /> */}
                   <Route path="/teste" element={<PingTest />} />
+                  <Route path="/proprietarios" element={<Proprietarios />} />
                 </Route>
               </Routes>
             </Suspense>

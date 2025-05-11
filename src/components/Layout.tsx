@@ -19,6 +19,7 @@ import {
   People as PeopleIcon,
   Inventory as InventoryIcon,
   Dashboard as DashboardIcon,
+  NetworkPing as NetworkPingIcon,
 } from '@mui/icons-material';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
@@ -42,9 +43,7 @@ const Main = styled('main', {
   overflowX: 'hidden',
 }));
 const menuItems = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
-  { text: 'Venda de Pulseiras', icon: <PeopleIcon />, path: '/unidades' },
-  { text: 'Cadastro de Pulseiras', icon: <InventoryIcon />, path: '/produtos' },
+  { text: 'Proprietários', icon: <PeopleIcon />, path: '/proprietarios' },
 ];
 
 export default function Layout() {

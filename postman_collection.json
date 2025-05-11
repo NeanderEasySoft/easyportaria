@@ -1,277 +1,38 @@
 {
-	"info": {
-		"_postman_id": "easyblue-collection",
-		"name": "EasyBlue API",
-		"description": "Coleção de testes para a API do EasyBlue",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Carrinhos",
-			"item": [
-				{
-					"name": "Listar Todos os Carrinhos",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos"]
-						},
-						"description": "Retorna todos os carrinhos cadastrados"
-					}
-				},
-				{
-					"name": "Buscar Carrinho por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Testa o status code da resposta",
-									"if (pm.response.code === 200) {",
-									"    pm.test(\"Status code é 200\", function () {",
-									"        pm.response.to.have.status(200);",
-									"    });",
-									"",
-									"    // Testa se o corpo da resposta é um JSON válido",
-									"    pm.test(\"Resposta é um JSON válido\", function () {",
-									"        pm.response.to.be.json;",
-									"    });",
-									"",
-									"    // Testa a estrutura do JSON de resposta",
-									"    pm.test(\"JSON tem a estrutura esperada\", function () {",
-									"        const responseData = pm.response.json();",
-									"        pm.expect(responseData).to.be.an('object');",
-									"        pm.expect(responseData).to.have.property('id_carrinho');",
-									"        pm.expect(responseData).to.have.property('id_unidade');",
-									"        pm.expect(responseData).to.have.property('data');",
-									"        pm.expect(responseData).to.have.property('total');",
-									"        pm.expect(responseData).to.have.property('status');",
-									"        pm.expect(responseData).to.have.property('itens');",
-									"        pm.expect(responseData.itens).to.be.an('array');",
-									"    });",
-									"",
-									"    // Testa se o status do carrinho é válido",
-									"    pm.test(\"Status do carrinho é válido\", function () {",
-									"        const responseData = pm.response.json();",
-									"        pm.expect(['Aberto', 'Finalizado', 'Cancelado']).to.include(responseData.status);",
-									"    });",
-									"} else if (pm.response.code === 404) {",
-									"    pm.test(\"Carrinho não encontrado retorna 404\", function () {",
-									"        pm.response.to.have.status(404);",
-									"        pm.expect(pm.response.text()).to.include('Carrinho não encontrado');",
-									"    });",
-									"}"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos/1",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos", "1"]
-						},
-						"description": "Retorna um carrinho específico pelo ID"
-					}
-				},
-				{
-					"name": "Buscar Carrinhos por Unidade",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos/unidade/1",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos", "unidade", "1"]
-						},
-						"description": "Retorna todos os carrinhos de uma unidade específica"
-					}
-				},
-				{
-					"name": "Criar Novo Carrinho",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"id_unidade\": 1,\n  \"total\": 150.00,\n  \"status\": \"Aberto\",\n  \"itens\": [\n    {\n      \"id_produto\": 1,\n      \"quantidade\": 2\n    },\n    {\n      \"id_produto\": 2,\n      \"quantidade\": 1\n    }\n  ]\n}"
-						},
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos"]
-						},
-						"description": "Cria um novo carrinho de compras"
-					}
-				},
-				{
-					"name": "Atualizar Status do Carrinho",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"status\": \"Finalizado\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos/1/status",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos", "1", "status"]
-						},
-						"description": "Atualiza o status de um carrinho específico"
-					}
-				},
-				{
-					"name": "Excluir Carrinho",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos/1",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos", "1"]
-						},
-						"description": "Exclui um carrinho específico e seus itens"
-					}
-				}
-			]
-		},
-		{
-			"name": "Testes de Validação",
-			"item": [
-				{
-					"name": "Buscar Carrinho - ID Inexistente",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Deve retornar status 404\", function () {",
-									"    pm.response.to.have.status(404);",
-									"});",
-									"",
-									"pm.test(\"Deve retornar mensagem de erro adequada\", function () {",
-									"    pm.expect(pm.response.text()).to.include('Carrinho não encontrado');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos/99999",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos", "99999"]
-						},
-						"description": "Tenta buscar um carrinho com ID inexistente"
-					}
-				},
-				{
-					"name": "Criar Carrinho - Status Inválido",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"id_unidade\": 1,\n  \"total\": 150.00,\n  \"status\": \"Status Inválido\",\n  \"itens\": [\n    {\n      \"id_produto\": 1,\n      \"quantidade\": 2\n    }\n  ]\n}"
-						},
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos"]
-						},
-						"description": "Tenta criar um carrinho com status inválido"
-					}
-				},
-				{
-					"name": "Atualizar Status - Status Inválido",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"status\": \"Status Inválido\"\n}"
-						},
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos/1/status",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos", "1", "status"]
-						},
-						"description": "Tenta atualizar um carrinho com status inválido"
-					}
-				},
-				{
-					"name": "Atualizar Status - Sem Body",
-					"request": {
-						"method": "PATCH",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{}"
-						},
-						"url": {
-							"raw": "http://localhost:9000/api/v1/carrinhos/1/status",
-							"protocol": "http",
-							"host": ["localhost"],
-							"port": "9000",
-							"path": ["api", "v1", "carrinhos", "1", "status"]
-						},
-						"description": "Tenta atualizar um status sem informar o novo status"
-					}
-				}
-			]
-		}
-	]
-} 
+    "info": {
+        "_postman_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", // Substitua por um UUID se quiser, ou deixe o Postman gerar
+        "name": "API EasyPortaria - Delphi Backend",
+        "description": "Coleção para testar os endpoints da API Delphi para o projeto EasyPortaria.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Listar Todas as Unidades (Moradores) - GetAllUnidadesFullData",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/SEU_CAMINHO_PARA_GETALLUNIDADESFULLDATA_AQUI",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "SEU_CAMINHO_PARA_GETALLUNIDADESFULLDATA_AQUI"
+                    ],
+                    "query": []
+                },
+                "description": "Busca todos os dados das unidades (que no frontend representam moradores) através da função GetAllUnidadesFullData do backend Delphi.\n\n**Ações Necessárias ANTES de usar:**\n1. Certifique-se de que a variável de coleção `baseUrl` (definida abaixo ou nas suas variáveis de ambiente do Postman) está correta (ex: `http://localhost:9031` para desenvolvimento).\n2. **IMPORTANTE:** Substitua `SEU_CAMINHO_PARA_GETALLUNIDADESFULLDATA_AQUI` na URL desta requisição pelo caminho exato do seu endpoint no backend Delphi (ex: `unidades`, `api/v1/unidades/completo`, etc.)."
+            },
+            "response": []
+        }
+        // Você pode adicionar mais requisições aqui no futuro
+    ],
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:9031",
+            "type": "string",
+            "description": "URL base da sua API Delphi. Altere conforme necessário para ambientes de desenvolvimento, teste ou produção."
+        }
+    ]
+}
