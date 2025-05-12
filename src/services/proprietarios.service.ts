@@ -40,8 +40,8 @@ export interface Unidade {
 export const UnidadesService = {
   listar: async (filtros?: FiltroUnidade): Promise<Unidade[]> => {
     try {
-      console.log('Enviando para /api/v1/unidades/all com filtros:', filtros);
-      const response = await api.get<Unidade[]>('/api/v1/unidades/all', { 
+      console.log('Enviando para /api/v1/unidadesall com filtros:', filtros);
+      const response = await api.get<Unidade[]>('/api/v1/unidadesall', { 
         params: filtros 
       });
       return response.data;
