@@ -123,12 +123,7 @@ export default function Proprietarios() {
   );
 
   const formatarMensagemWhatsApp = async (proprietario: Unidade): Promise<string> => {
-    let mensagem = `Olá ${proprietario.pessoa}!\\n\\n`;
-    mensagem += `Segue informação referente à unidade ${proprietario.nomeunidade}.\\n\\n`;
-    mensagem += `*Dados do Cliente:*\\n`;
-    mensagem += `Unidade: ${proprietario.nomeunidade}\\n`;
-    mensagem += `Pessoa: ${proprietario.pessoa}\\n`;
-    if (proprietario.tipo) mensagem += `Tipo: ${proprietario.tipo}\\n`;
+    let mensagem = `Olá ${proprietario.pessoa} - ${proprietario.nomeunidade}`;
 
     return encodeURIComponent(mensagem);
   };
@@ -291,19 +286,20 @@ export default function Proprietarios() {
           <Table>
             <TableHead>
               <TableRow>
-                <StyledTableCell sx={{ width: 'auto', minWidth: 160 }}>Ações</StyledTableCell>
+                <StyledTableCell sx={{ width: 'auto', minWidth: 120 }}>Ações</StyledTableCell>
                 <StyledTableCell>Unidade</StyledTableCell>
                 <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Tipo</StyledTableCell>
                 <StyledTableCell>Pessoa (Proprietário)</StyledTableCell>
                 <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Telefones</StyledTableCell>
                 <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' }, minWidth: 300 }}>Endereço</StyledTableCell>
                 <StyledTableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>Número</StyledTableCell>
+                <StyledTableCell sx={{ width: 'auto', minWidth: 80, textAlign: 'center' }}>Excluir</StyledTableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {proprietariosPaginados.map((proprietario) => (
                 <StyledTableRow key={proprietario.id_unidade}>
-                  <TableCell sx={{ width: 'auto', minWidth: 160 }}>
+                  <TableCell sx={{ width: 'auto', minWidth: 120 }}>
                     <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'start', flexWrap: 'nowrap' }}>
                       <IconButton
                         color="primary"
@@ -312,14 +308,6 @@ export default function Proprietarios() {
                         title="Alterar Proprietário"
                       >
                         <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        color="error"
-                        onClick={() => handleExcluir(proprietario)}
-                        size="small"
-                        title="Excluir Proprietário"
-                      >
-                        <DeleteIcon />
                       </IconButton>
                       {proprietario.celular && (
                         <IconButton
@@ -360,6 +348,16 @@ export default function Proprietarios() {
                   </TableCell>
                   <TableCell sx={{ display: { xs: 'none', md: 'table-cell' }, minWidth: 250 }}>{proprietario.endereco || '-'}</TableCell>
                   <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>{proprietario.numero || '-'}</TableCell>
+                  <TableCell sx={{ textAlign: 'center' }}>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleExcluir(proprietario)}
+                      size="small"
+                      title="Excluir Proprietário"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
                 </StyledTableRow>
               ))}
             </TableBody>

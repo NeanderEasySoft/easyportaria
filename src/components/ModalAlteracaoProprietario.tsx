@@ -15,12 +15,14 @@ import {
   Alert,
   Typography,
   SelectChangeEvent,
+  Box,
 } from '@mui/material';
 import {
   Room as RoomIcon
 } from '@mui/icons-material';
 import { IMaskInput } from 'react-imask';
 import { Unidade } from '../services/proprietarios.service';
+import { RuasService, Rua } from '../services/ruas.service';
 
 // --- INÍCIO DOS COMPONENTES DE MÁSCARA CUSTOMIZADOS ---
 interface CustomMaskProps {
@@ -77,8 +79,37 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
   const [salvandoAlteracao, setSalvandoAlteracao] = useState(false);
   const [buscandoGeo, setBuscandoGeo] = useState(false);
 
+  // Estados para a lista de ruas
+  const [ruas, setRuas] = useState<Rua[]>([]);
+  const [loadingRuas, setLoadingRuas] = useState(false);
+  const [erroRuas, setErroRuas] = useState<string>('');
+
+  // Buscar ruas quando o modal for aberto
   useEffect(() => {
-    if (proprietario) {
+    if (open) {
+      const fetchRuas = async () => {
+        setLoadingRuas(true);
+        setErroRuas('');
+        try {
+          const data = await RuasService.listar();
+          setRuas(data);
+        } catch (err) {
+          console.error("Erro ao carregar ruas:", err);
+          setErroRuas('Erro ao carregar lista de ruas. Tente novamente.');
+        }
+        setLoadingRuas(false);
+      };
+      fetchRuas();
+    } else {
+      // Limpar lista de ruas e erros quando o modal é fechado para não persistir em aberturas futuras
+      setRuas([]);
+      setErroRuas('');
+      setLoadingRuas(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (open && proprietario) {
       setDadosFormularioEdicao({
         id_unidade: proprietario.id_unidade,
         idunidade: proprietario.idunidade,
@@ -90,16 +121,57 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
         fone: proprietario.fone,
         celular: proprietario.celular,
         comercial: proprietario.comercial,
-        endereco: proprietario.endereco,
+        endereco: proprietario.endereco || '',
         numero: proprietario.numero,
         latitude: proprietario.latitude,
         longitude: proprietario.longitude,
       });
       setErroFormularioEdicao('');
-    } else {
-      setDadosFormularioEdicao({} as Partial<Unidade>); 
+    } else if (open && !proprietario) {
+      setDadosFormularioEdicao({
+        nomeunidade: '',
+        pessoa: '',
+        tipo: '',
+        email: '',
+        recado: '',
+        fone: '',
+        celular: '',
+        comercial: '',
+        endereco: '',
+        numero: '',
+      } as Partial<Unidade>);
+      setErroFormularioEdicao('');
     }
   }, [proprietario, open]);
+
+  // NOVO useEffect para validar o endereço após as ruas serem carregadas
+  useEffect(() => {
+    // Executa somente se estiver editando um proprietário (proprietario existe),
+    // as ruas foram carregadas (loadingRuas é false e não há erroRuas),
+    // e o modal está aberto.
+    if (
+      open &&
+      proprietario &&
+      proprietario.endereco &&
+      !loadingRuas &&
+      ruas.length > 0 &&
+      !erroRuas
+    ) {
+      const enderecoAtualExisteNaLista = ruas.some(
+        (rua) => rua.nomerua === proprietario.endereco
+      );
+  
+      // Sempre mantém o endereço original do proprietário
+      // Apenas adiciona uma flag separada se ele for inválido
+      setDadosFormularioEdicao((prev) => ({
+        ...prev,
+        endereco: proprietario.endereco,
+        enderecoInvalido: !enderecoAtualExisteNaLista, // adiciona essa flag
+      }));
+    
+    }
+  }, [proprietario, ruas, loadingRuas, erroRuas, open]);
+  
 
   const handleChangeFormularioEdicao = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
     const { name, value } = event.target;
@@ -201,6 +273,11 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
             {erroFormularioEdicao}
           </Alert>
         )}
+        {erroRuas && (
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            {erroRuas} (O campo de endereço funcionará como texto livre)
+          </Alert>
+        )}
         
         <Grid component="form" noValidate autoComplete="off" container spacing={2} sx={{ mt: 0.5 }}>
           <Grid item xs={12}>
@@ -251,16 +328,45 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
           </Grid>
 
           <Grid item xs={12}>
-            <TextField
-              fullWidth
-              margin="dense"
-              id="endereco"
-              name="endereco"
-              label="Endereço"
-              value={dadosFormularioEdicao.endereco || ''}
-              onChange={handleChangeFormularioEdicao}
-              disabled={salvandoAlteracao}
-            />
+            {loadingRuas ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', mt: 2 }}>
+                <CircularProgress size={24} sx={{ mr: 1 }} />
+                <Typography variant="body2">Carregando ruas...</Typography>
+              </Box>
+            ) : ruas.length > 0 ? (
+              <FormControl fullWidth margin="dense" disabled={salvandoAlteracao}>
+                <InputLabel id="endereco-select-label">Endereço (Rua)</InputLabel>
+                <Select
+                  labelId="endereco-select-label"
+                  id="endereco"
+                  name="endereco"
+                  value={dadosFormularioEdicao.endereco || ''}
+                  label="Endereço (Rua)"
+                  onChange={handleChangeFormularioEdicao}
+                >
+                  <MenuItem value=""><em>Nenhuma</em></MenuItem> {/* Opção para limpar */} 
+                  {ruas.map((rua) => (
+                    <MenuItem key={rua.idrua} value={rua.nomerua}>
+                      {rua.nomerua}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              // Fallback para TextField se não houver ruas ou erro ao carregar (exceto se já houver erroRuas)
+              <TextField
+                fullWidth
+                margin="dense"
+                id="endereco"
+                name="endereco"
+                label="Endereço (Rua) - não foi possível carregar lista"
+                value={dadosFormularioEdicao.endereco || ''}
+                onChange={handleChangeFormularioEdicao}
+                disabled={salvandoAlteracao}
+                helperText={erroRuas ? erroRuas : ''}
+                error={!!erroRuas}
+              />
+            )}
           </Grid>
 
           <Grid item xs={12} sm={6}>
