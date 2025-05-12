@@ -321,7 +321,7 @@ const ModalAlteracaoProprietario: React.FC<ModalAlteracaoProprietarioProps> = ({
                 label="Tipo"
                 onChange={handleChangeFormularioEdicao}
               >
-                <MenuItem value={"Proprietário"}>Proprietário</MenuItem>
+                <MenuItem value={"Proprietario"}>Proprietário</MenuItem>
                 <MenuItem value={"Inquilino"}>Inquilino</MenuItem>
               </Select>
             </FormControl>
